@@ -1,0 +1,152 @@
+<div class="inventory-container">
+  <!-- Header Section -->
+  <div class="page-header">
+    <div class="header-left">
+      <h1>📦 Gestion des Inventaires</h1>
+    </div>
+    <button class="btn btn-primary" (click)="openAddModal()">
+      <span>+</span> Nouvel Inventaire
+    </button>
+  </div>
+
+  <!-- Statistics Cards -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon">📊</div>
+      <div class="stat-content">
+        <div class="stat-value">{{ totalInventories }}</div>
+        <div class="stat-label">Total Inventaires</div>
+      </div>
+    </div>
+    <div class="stat-card warning">
+      <div class="stat-icon">⚠️</div>
+      <div class="stat-content">
+        <div class="stat-value">{{ lowStock }}</div>
+        <div class="stat-label">Stock Faible</div>
+      </div>
+    </div>
+    <div class="stat-card danger">
+      <div class="stat-icon">❌</div>
+      <div class="stat-content">
+        <div class="stat-value">{{ outOfStock }}</div>
+        <div class="stat-label">Rupture</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters Section -->
+  <div class="filters-section">
+    <div class="search-box">
+      <input
+        type="text"
+        class="form-control"
+        placeholder="🔍 Rechercher..."
+        [(ngModel)]="searchTerm"
+        (input)="applyFilters()"
+      />
+    </div>
+    <select class="form-control filter-select" [(ngModel)]="warehouseFilter" (change)="applyFilters()">
+      <option value="">📦 Tous les entrepôts</option>
+      <option *ngFor="let warehouse of warehouses" [value]="warehouse.id">{{ warehouse.name }}</option>
+    </select>
+    <select class="form-control filter-select" [(ngModel)]="productFilter" (change)="applyFilters()">
+      <option value="">🔧 Tous les produits</option>
+      <option *ngFor="let product of products" [value]="product.id">{{ product.name }}</option>
+    </select>
+    <button class="btn btn-secondary" (click)="resetFilters()">Réinitialiser</button>
+  </div>
+
+  <!-- Table Section -->
+  <div class="table-container">
+    <table class="inventory-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>PRODUIT</th>
+          <th>ENTREPÔT</th>
+          <th>QTÉ EN STOCK</th>
+          <th>QTÉ RÉSERVÉE</th>
+          <th>DISPONIBLE</th>
+          <th>STATUT</th>
+          <th>ACTIONS</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let inventory of filteredInventories">
+          <td class="id-col">{{ inventory.id }}</td>
+          <td>
+            <div class="product-info">
+              <div class="product-name">{{ inventory.productName }}</div>
+            </div>
+          </td>
+          <td>
+            <span class="warehouse-badge">{{ inventory.warehouseName }}</span>
+          </td>
+          <td class="quantity-col">{{ inventory.quantityInStock }}</td>
+          <td class="reserved-col">{{ inventory.reservedQuantity }}</td>
+          <td class="available-col">{{ inventory.availableQuantity }}</td>
+          <td>
+            <span class="badge" [ngClass]="getStatusClass(inventory)">
+              {{ getStatusLabel(inventory) }}
+            </span>
+          </td>
+          <td>
+            <div class="actions">
+              <button class="btn btn-primary btn-sm" (click)="openEditModal(inventory)">
+                ✏️
+              </button>
+              <button class="btn btn-danger btn-sm" (click)="deleteInventory(inventory.id)">
+                🗑️
+              </button>
+            </div>
+          </td>
+        </tr>
+        <tr *ngIf="filteredInventories.length === 0">
+          <td colspan="8" class="no-data">Aucun inventaire trouvé</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Modal for Add/Edit Inventory -->
+<div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>{{ isEditMode ? 'Modifier l\'Inventaire' : 'Nouvel Inventaire' }}</h3>
+      <button class="close-btn" (click)="closeModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <form>
+        <div class="form-group">
+          <label>Produit</label>
+          <select class="form-control" [(ngModel)]="currentInventory.productId" name="productId">
+            <option value="">Sélectionner un produit</option>
+            <option *ngFor="let product of products" [value]="product.id">{{ product.name }}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Entrepôt</label>
+          <select class="form-control" [(ngModel)]="currentInventory.warehouseId" name="warehouseId">
+            <option value="">Sélectionner un entrepôt</option>
+            <option *ngFor="let warehouse of warehouses" [value]="warehouse.id">{{ warehouse.name }}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Quantité en Stock</label>
+          <input type="number" class="form-control" [(ngModel)]="currentInventory.quantityInStock" name="quantityInStock" />
+        </div>
+        <div class="form-group">
+          <label>Quantité Réservée</label>
+          <input type="number" class="form-control" [(ngModel)]="currentInventory.reservedQuantity" name="reservedQuantity" />
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" (click)="closeModal()">Annuler</button>
+      <button class="btn btn-primary" (click)="saveInventory()">
+        {{ isEditMode ? 'Mettre à jour' : 'Ajouter' }}
+      </button>
+    </div>
+  </div>
+</div>

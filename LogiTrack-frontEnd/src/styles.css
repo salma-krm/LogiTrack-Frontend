@@ -1,0 +1,167 @@
+/* You can add global styles to this file, and also import other style files */
+
+/* ========================================
+   VARIABLES GLOBALES - COULEUR PRINCIPALE
+   ======================================== */
+:root {
+  --primary-color: #B99DFA;
+  --primary-hover: #a78ae8;
+  --primary-light: #d4c5f9;
+  --primary-dark: #9a7ee5;
+  --primary-gradient: linear-gradient(135deg, #B99DFA 0%, #a78ae8 100%);
+  --success-color: #10b981;
+  --danger-color: #ef4444;
+  --warning-color: #f59e0b;
+  --text-dark: #1f2937;
+  --text-medium: #6b7280;
+  --text-light: #9ca3af;
+  --bg-light: #f9fafb;
+  --bg-white: #ffffff;
+  --border-color: #e5e7eb;
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+/* Global styles pour LogiTrack */
+
+/* Reset et styles de base */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  color: var(--text-dark);
+  background: var(--bg-light);
+  line-height: 1.6;
+}
+
+/* Styles spécifiques pour le dashboard */
+app-layout,
+app-layout > *,
+.app-layout,
+.main-content {
+  background-color: white !important;
+}
+
+/* S'assurer que tous les containers ont un fond blanc */
+.categories-container,
+.products-container,
+.home-container {
+  background-color: white !important;
+}
+
+/* Styles pour les pages du dashboard */
+.dashboard-page {
+  background-color: white !important;
+  min-height: 100vh;
+}
+
+/* Override de tout fond coloré dans le dashboard */
+[class*="container"] {
+  background-color: white !important;
+}
+
+/* Styles pour la sidebar */
+.sidebar {
+  background-color: white !important;
+}
+
+/* Global Button Styles */
+.btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-primary {
+  background: var(--primary-gradient);
+  color: white;
+}
+
+.btn-primary:hover {
+  background: var(--primary-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(185, 157, 250, 0.3);
+}
+
+.btn-success {
+  background: var(--success-color);
+  color: white;
+}
+
+.btn-success:hover {
+  background: #059669;
+  transform: translateY(-1px);
+}
+
+.btn-danger {
+  background: var(--danger-color);
+  color: white;
+}
+
+.btn-danger:hover {
+  background: #dc2626;
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background: var(--primary-light);
+  color: var(--primary-dark);
+}
+
+.btn-secondary:hover {
+  background: var(--primary-color);
+  color: white;
+}
+
+/* Badge Styles */
+.badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.badge-success {
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--success-color);
+}
+
+.badge-danger {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--danger-color);
+}
+
+.badge-warning {
+  background: rgba(245, 158, 11, 0.1);
+  color: var(--warning-color);
+}
+
+/* Input Styles */
+.form-control {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 14px;
+  transition: border-color 0.3s ease;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(185, 157, 250, 0.1);
+}

@@ -1,0 +1,80 @@
+<div class="categories-container">
+  <div class="page-header">
+    <h1>Gestion des Catégories</h1>
+    <button class="btn-primary" (click)="openCreateModal()">
+      Nouvelle Catégorie
+    </button>
+  </div>
+
+  <!-- Message d'erreur -->
+  <div class="alert alert-error" *ngIf="error">
+    {{ error }}
+  </div>
+
+  <!-- Table des catégories -->
+  <div class="categories-table">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nom de la Catégorie</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let category of categories; let i = index" class="category-row">
+          <td>{{ category.id }}</td>
+          <td>{{ category.name }}</td>
+          <td class="actions">
+            <button class="btn-edit" (click)="openEditModal(category)">
+              Modifier
+            </button>
+            <button class="btn-delete" (click)="deleteCategory(category)">
+              Supprimer
+            </button>
+          </td>
+        </tr>
+        <tr *ngIf="categories.length === 0">
+          <td colspan="3" class="no-data">Aucune catégorie trouvée</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Modal pour créer/modifier une catégorie -->
+  <div class="modal-overlay" *ngIf="isModalOpen" (click)="closeModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>{{ isEditMode ? 'Modifier la Catégorie' : 'Nouvelle Catégorie' }}</h3>
+        <button class="close-btn" (click)="closeModal()">×</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="categoryName">Nom de la catégorie *</label>
+          <input
+            type="text"
+            id="categoryName"
+            [(ngModel)]="currentCategory.name"
+            placeholder="Entrez le nom de la catégorie"
+            class="form-control"
+            maxlength="100">
+        </div>
+
+        <div class="alert alert-error" *ngIf="error">
+          {{ error }}
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-secondary" (click)="closeModal()">Annuler</button>
+        <button
+          class="btn-primary"
+          (click)="saveCategory()"
+          [disabled]="!currentCategory.name.trim()">
+          {{ isEditMode ? 'Mettre à jour' : 'Créer' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

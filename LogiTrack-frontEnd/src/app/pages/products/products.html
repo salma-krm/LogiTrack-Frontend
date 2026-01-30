@@ -1,0 +1,141 @@
+<div class="products-container">
+  <!-- Header Section -->
+  <div class="page-header">
+    <div class="header-left">
+      <h1>📦 Gestion des Produits</h1>
+    </div>
+    <button class="btn btn-primary" (click)="openAddModal()">
+      <span>+</span> Ajouter un Produit
+    </button>
+  </div>
+
+  <!-- Statistics Cards -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-value">{{ totalProducts }}</div>
+      <div class="stat-label">Produits affichés</div>
+    </div>
+    <div class="stat-card success">
+      <div class="stat-value">{{ activeProducts }}</div>
+      <div class="stat-label">Produits actifs</div>
+    </div>
+    <div class="stat-card danger">
+      <div class="stat-value">{{ inactiveProducts }}</div>
+      <div class="stat-label">Produits inactifs</div>
+    </div>
+  </div>
+
+  <!-- Filters Section -->
+  <div class="filters-section">
+    <div class="search-box">
+      <input
+        type="text"
+        class="form-control"
+        placeholder="🔍 Rechercher par nom ou SKU"
+        [(ngModel)]="searchTerm"
+        (input)="applyFilters()"
+      />
+    </div>
+    <select class="form-control filter-select" [(ngModel)]="categoryFilter" (change)="applyFilters()">
+      <option value="">Toutes les catégories</option>
+      <option *ngFor="let category of categories" [value]="category.id">{{ category.name }}</option>
+    </select>
+    <button class="btn btn-secondary" (click)="resetFilters()">Effacer</button>
+  </div>
+
+  <!-- Table Section -->
+  <div class="table-container">
+    <table class="products-table">
+      <thead>
+        <tr>
+          <th>SKU</th>
+          <th>NOM</th>
+          <th>PRIX</th>
+          <th>CATÉGORIE</th>
+          <th>STATUT</th>
+          <th>ACTIONS</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let product of filteredProducts">
+          <td class="sku-col">{{ product.sku }}</td>
+          <td>
+            <div class="product-name">{{ product.name }}</div>
+            <div class="product-description">{{ product.description }}</div>
+          </td>
+          <td class="price-col">{{ product.price | currency:'EUR' }}</td>
+          <td>
+            <span class="badge badge-category">{{ product.categoryName || 'Salma' }}</span>
+          </td>
+          <td>
+            <span class="badge" [ngClass]="product.active ? 'badge-success' : 'badge-danger'">
+              {{ product.active ? 'ACTIF' : 'INACTIF' }}
+            </span>
+          </td>
+          <td>
+            <div class="actions">
+              <button class="btn btn-primary btn-sm" (click)="openEditModal(product)">
+                MODIFIER
+              </button>
+              <button class="btn btn-danger btn-sm" (click)="deleteProduct(product.id)">
+                SUPPRIMER
+              </button>
+            </div>
+          </td>
+        </tr>
+        <tr *ngIf="filteredProducts.length === 0">
+          <td colspan="6" class="no-data">Aucun produit trouvé</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Modal for Add/Edit Product -->
+<div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>{{ isEditMode ? 'Modifier le Produit' : 'Ajouter un Produit' }}</h3>
+      <button class="close-btn" (click)="closeModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <form>
+        <div class="form-group">
+          <label>SKU</label>
+          <input type="text" class="form-control" [(ngModel)]="currentProduct.sku" name="sku" />
+        </div>
+        <div class="form-group">
+          <label>Nom du Produit</label>
+          <input type="text" class="form-control" [(ngModel)]="currentProduct.name" name="name" />
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <textarea class="form-control" [(ngModel)]="currentProduct.description" name="description" rows="3"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Prix (€)</label>
+          <input type="number" class="form-control" [(ngModel)]="currentProduct.price" name="price" />
+        </div>
+        <div class="form-group">
+          <label>Catégorie</label>
+          <select class="form-control" [(ngModel)]="currentProduct.categoryId" name="categoryId">
+            <option value="">Sélectionner une catégorie</option>
+            <option *ngFor="let category of categories" [value]="category.id">{{ category.name }}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="checkbox-label">
+            <input type="checkbox" [(ngModel)]="currentProduct.active" name="active" />
+            <span>Produit actif</span>
+          </label>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" (click)="closeModal()">Annuler</button>
+      <button class="btn btn-primary" (click)="saveProduct()">
+        {{ isEditMode ? 'Mettre à jour' : 'Ajouter' }}
+      </button>
+    </div>
+  </div>
+</div>

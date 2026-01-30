@@ -1,0 +1,101 @@
+<!-- Overlay pour mobile -->
+<div class="mobile-overlay"
+     *ngIf="isMobileMenuOpen"
+     (click)="closeMobileMenu()"></div>
+
+<!-- Bouton hamburger pour mobile -->
+<button class="mobile-toggle" (click)="toggleMobileMenu()">
+  <span class="hamburger-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </span>
+</button>
+
+<nav class="sidebar" [class.collapsed]="isCollapsed" [class.mobile-open]="isMobileMenuOpen">
+  <!-- Header avec logo -->
+  <div class="sidebar-header">
+    <div class="logo-container">
+      <div class="logo-icon">📦</div>
+      <h2 class="logo" *ngIf="!isCollapsed">LogiTrack</h2>
+    </div>
+    <button class="toggle-btn" (click)="toggleSidebar()" *ngIf="!isCollapsed">
+      <span>{{ isCollapsed ? '→' : '←' }}</span>
+    </button>
+  </div>
+
+  <!-- Profil utilisateur -->
+  <div class="user-profile" *ngIf="currentUser">
+    <div class="user-avatar">
+      {{ userInitials }}
+    </div>
+    <div class="user-info" *ngIf="!isCollapsed">
+      <h3 class="user-name">{{ currentUser.firstName }} {{ currentUser.lastName }}</h3>
+      <p class="user-role">{{ currentUser.role }}</p>
+    </div>
+  </div>
+
+  <!-- Menu principal -->
+  <div class="menu-section">
+    <div class="section-title" *ngIf="!isCollapsed">
+      <span class="section-icon">🎯</span>
+      Navigation
+    </div>
+    <ul class="sidebar-menu">
+      <li *ngFor="let item of filteredMenuItems">
+        <a
+          [routerLink]="item.route"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{exact: item.route === '/dashboard'}"
+          [title]="item.label"
+          (click)="closeMobileMenu()">
+          <i class="icon">{{ item.icon }}</i>
+          <span *ngIf="!isCollapsed">{{ item.label }}</span>
+          <span class="badge" *ngIf="item.badge && !isCollapsed">{{ item.badge }}</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Section admin supplémentaire -->
+  <div class="admin-section" *ngIf="currentUser?.role === 'ADMIN' && !isCollapsed">
+    <div class="section-title">
+      <span class="section-icon">⚡</span>
+      Administration
+    </div>
+    <ul class="sidebar-menu">
+      <li>
+        <a routerLink="/users"
+           routerLinkActive="active"
+           (click)="closeMobileMenu()">
+          <i class="icon">👥</i>
+          <span>Utilisateurs</span>
+        </a>
+      </li>
+      <li>
+        <a routerLink="/settings"
+           routerLinkActive="active"
+           (click)="closeMobileMenu()">
+          <i class="icon">⚙️</i>
+          <span>Paramètres</span>
+        </a>
+      </li>
+      <li>
+        <a routerLink="/reports"
+           routerLinkActive="active"
+           (click)="closeMobileMenu()">
+          <i class="icon">📈</i>
+          <span>Rapports</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Footer avec déconnexion -->
+  <div class="sidebar-footer">
+    <button class="logout-btn" (click)="logout(); closeMobileMenu()" [title]="'Déconnexion'">
+      <i class="icon">🚪</i>
+      <span *ngIf="!isCollapsed">Déconnexion</span>
+    </button>
+  </div>
+</nav>

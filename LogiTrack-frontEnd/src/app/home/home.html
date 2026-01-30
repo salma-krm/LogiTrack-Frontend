@@ -1,0 +1,113 @@
+<div class="home-container">
+  <header class="header">
+    <div class="header-content">
+      <h1>🏠 LogiTrack - Tableau de Bord</h1>
+    </div>
+  </header>
+
+  <main class="content">
+    <!-- Stats Cards -->
+    <div class="dashboard-grid">
+      <div class="dashboard-card" routerLink="/dashboard/categories">
+        <h3>📂 Catégories</h3>
+        <p class="card-description">Gérez vos catégories de produits</p>
+        <div class="card-action">
+          <span class="action-text">Gérer →</span>
+        </div>
+      </div>
+
+      <div class="dashboard-card" routerLink="/dashboard/products">
+        <h3>📦 Produits</h3>
+        <p class="card-description">Gérez votre inventaire de produits</p>
+        <div class="stats">
+          <span class="stat-number">{{ products.length }}</span>
+          <span class="stat-label">Produits actifs</span>
+        </div>
+      </div>
+
+      <div class="dashboard-card" routerLink="/dashboard/warehouses" [class.loading]="warehousesLoading">
+        <h3>🏭 Entrepôts</h3>
+        <p class="card-description">Gérez vos espaces de stockage</p>
+        <div class="stats" *ngIf="!warehousesLoading && !warehouseError">
+          <span class="stat-number">{{ activeWarehouses }}/{{ totalWarehouses }}</span>
+          <span class="stat-label">Entrepôts actifs</span>
+        </div>
+        <div class="loading-text" *ngIf="warehousesLoading">Chargement...</div>
+        <div class="error-text" *ngIf="warehouseError">{{ warehouseError }}</div>
+      </div>
+
+      <div class="dashboard-card">
+        <h3>🛒 Commandes</h3>
+        <p class="card-description">Suivez vos commandes en cours</p>
+      </div>
+    </div>
+
+    <!-- Warehouses Section -->
+    <section class="warehouses-section" *ngIf="!warehousesLoading && warehouses.length > 0">
+      <div class="section-header">
+        <h2>🏭 Aperçu des Entrepôts</h2>
+        <button class="btn btn-primary" (click)="goToWarehouses()">Gérer les entrepôts</button>
+      </div>
+
+      <div class="warehouses-grid">
+        <div class="warehouse-card" *ngFor="let warehouse of warehouses">
+          <div class="warehouse-header">
+            <h4>{{ warehouse.name }}</h4>
+            <span class="warehouse-status" [class.active]="warehouse.active" [class.inactive]="!warehouse.active">
+              {{ warehouse.active ? 'Actif' : 'Inactif' }}
+            </span>
+          </div>
+          <div class="warehouse-info">
+            <p class="manager">
+              <strong>Manager:</strong> {{ warehouse.managerName || 'Non assigné' }}
+            </p>
+            <p class="email" *ngIf="warehouse.managerEmail">
+              📧 {{ warehouse.managerEmail }}
+            </p>
+          </div>
+          <div class="warehouse-actions">
+            <button class="btn-sm btn-outline" routerLink="/dashboard/warehouses">Voir détails</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Products Section -->
+    <section class="products-section">
+      <div class="section-header">
+        <h2>📦 Produits Disponibles</h2>
+        <button class="btn btn-primary" (click)="goToShop()">Voir tout le catalogue</button>
+      </div>
+
+      <div class="loading" *ngIf="isLoading">Chargement des produits...</div>
+      <div class="error" *ngIf="error">{{ error }}</div>
+
+      <div class="products-grid" *ngIf="!isLoading && products.length > 0">
+        <div class="product-card" *ngFor="let product of products">
+          <div class="product-icon">📦</div>
+          <div class="product-info">
+            <h4>{{ product.name }}</h4>
+            <p class="sku">SKU: {{ product.sku }}</p>
+            <p class="price">{{ (product.originalPrice + product.profit) | currency:'EUR' }}</p>
+          </div>
+          <span class="badge" [class.active]="product.active">
+            {{ product.active ? 'Actif' : 'Inactif' }}
+          </span>
+        </div>
+      </div>
+
+      <div class="no-products" *ngIf="!isLoading && products.length === 0">
+        Aucun produit disponible pour le moment.
+      </div>
+    </section>
+
+    <!-- Empty State for Warehouses -->
+    <section class="warehouses-empty" *ngIf="!warehousesLoading && warehouses.length === 0 && !warehouseError">
+      <div class="empty-state">
+        <h3>🏭 Aucun entrepôt configuré</h3>
+        <p>Commencez par créer votre premier entrepôt pour gérer vos stocks.</p>
+        <button class="btn btn-primary" (click)="goToWarehouses()">Créer un entrepôt</button>
+      </div>
+    </section>
+  </main>
+</div>

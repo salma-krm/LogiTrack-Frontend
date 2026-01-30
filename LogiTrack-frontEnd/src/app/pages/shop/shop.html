@@ -1,0 +1,145 @@
+<div class="shop-container">
+  <div class="shop-header">
+    <h1>🛍️ Boutique LogiTrack</h1>
+    <div class="search-bar">
+      <input
+        type="text"
+        [(ngModel)]="searchTerm"
+        (input)="applyFilter()"
+        placeholder="Rechercher des produits..."
+        class="search-input">
+      <button class="search-btn">🔍</button>
+    </div>
+    <div class="cart-summary" (click)="toggleCart()">
+      🛒 Panier ({{ getCartItemCount() }}) - {{ getCartTotal() | currency:'EUR' }}
+    </div>
+  </div>
+
+  <!-- Messages -->
+  <div *ngIf="error" class="alert alert-error">{{ error }}</div>
+  <div *ngIf="successMessage" class="alert alert-success">{{ successMessage }}</div>
+
+  <!-- Warehouse Selection -->
+  <div class="warehouse-selection">
+    <label for="warehouse">Entrepôt de livraison:</label>
+    <select id="warehouse" [(ngModel)]="selectedWarehouseId" class="warehouse-select">
+      <option value="" disabled>Sélectionner un entrepôt</option>
+      <option *ngFor="let warehouse of warehouses" [value]="warehouse.id">
+        {{ warehouse.name }}
+      </option>
+    </select>
+  </div>
+
+  <!-- Products Grid -->
+  <div class="products-section">
+    <div *ngIf="isLoading" class="loading">
+      <div class="spinner"></div>
+      <p>Chargement des produits...</p>
+    </div>
+
+    <div class="products-grid" *ngIf="!isLoading">
+      <div *ngFor="let product of filteredProducts" class="product-card">
+        <div class="product-image">📦</div>
+        <div class="product-info">
+          <h3>{{ product.name }}</h3>
+          <p class="product-description">{{ product.description }}</p>
+          <p class="product-sku">SKU: {{ product.sku }}</p>
+          <div class="product-price">{{ product.price | currency:'EUR' }}</div>
+        </div>
+        <button
+          (click)="addToCart(product)"
+          class="add-to-cart-btn"
+          [disabled]="!product.active">
+          Ajouter au panier
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="filteredProducts.length === 0 && !isLoading" class="no-products">
+      <h3>Aucun produit trouvé</h3>
+      <p>Essayez de modifier vos critères de recherche.</p>
+    </div>
+  </div>
+
+  <!-- Shopping Cart Sidebar -->
+  <div class="cart-sidebar" [class.open]="showCart">
+    <div class="cart-header">
+      <h2>🛒 Mon Panier</h2>
+      <button (click)="toggleCart()" class="close-cart">×</button>
+    </div>
+
+    <div class="cart-items" *ngIf="cart.length > 0">
+      <div *ngFor="let item of cart; index as i" class="cart-item">
+        <div class="item-info">
+          <h4>{{ item.product.name }}</h4>
+          <p>{{ item.product.price | currency:'EUR' }}</p>
+        </div>
+        <div class="item-controls">
+          <input
+            type="number"
+            [value]="item.quantity"
+            (change)="updateQuantity(i, +$event.target.value)"
+            min="1"
+            class="quantity-input">
+          <button (click)="removeFromCart(i)" class="remove-btn">🗑️</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="cart-empty" *ngIf="cart.length === 0">
+      <p>Votre panier est vide</p>
+    </div>
+
+    <div class="cart-footer" *ngIf="cart.length > 0">
+      <div class="cart-total">
+        <strong>Total: {{ getCartTotal() | currency:'EUR' }}</strong>
+      </div>
+      <button (click)="openOrderModal()" class="checkout-btn">
+        Commander
+      </button>
+    </div>
+  </div>
+
+  <!-- Order Modal -->
+  <div class="modal-overlay" *ngIf="showOrderModal" (click)="closeOrderModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Finaliser la commande</h2>
+        <button (click)="closeOrderModal()" class="close-btn">×</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="order-summary">
+          <h3>Résumé de la commande</h3>
+          <div *ngFor="let item of cart" class="order-item">
+            <span>{{ item.product.name }} × {{ item.quantity }}</span>
+            <span>{{ (item.product.price * item.quantity) | currency:'EUR' }}</span>
+          </div>
+          <div class="order-total">
+            <strong>Total: {{ getCartTotal() | currency:'EUR' }}</strong>
+          </div>
+        </div>
+
+        <div class="order-form">
+          <label for="notes">Notes (optionnel):</label>
+          <textarea
+            id="notes"
+            [(ngModel)]="orderNotes"
+            placeholder="Instructions spéciales..."
+            class="notes-textarea"></textarea>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button (click)="closeOrderModal()" class="btn-secondary">Annuler</button>
+        <button (click)="submitOrder()" class="btn-primary" [disabled]="isLoading">
+          <span *ngIf="isLoading">Traitement...</span>
+          <span *ngIf="!isLoading">Confirmer la commande</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Overlay -->
+  <div class="overlay" *ngIf="showCart || showOrderModal" (click)="showCart = false; showOrderModal = false"></div>
+</div>
